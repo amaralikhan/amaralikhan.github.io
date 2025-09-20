@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. [Your Name] - Surgical Residency Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #2d3748;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        :root {
+            --primary-dark: #374151;
+            --primary-light: #6b7280;
+            --accent: #3b82f6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --background-light: #f9fafb;
+            --background-white: #ffffff;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        /* Admin Panel Styles */
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 2000;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            background: #2563eb;
+        }
+
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: -500px;
+            width: 500px;
+            height: 100vh;
+            background: var(--background-white);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.15);
+            z-index: 1999;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding: 25px;
+            border-right: 3px solid var(--accent);
+        }
+
+        .admin-panel.active {
+            left: 0;
+        }
+
+        .admin-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: var(--background-light);
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .admin-section h3 {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .upload-section {
+            background: #eff6ff;
+            border: 2px dashed var(--accent);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            background: #dbeafe;
+            border-color: #2563eb;
+        }
+
+        .photo-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+            margin: 15px auto;
+            display: none;
+            object-fit: cover;
+        }
+
+        .photo-preview.visible {
+            display: block;
+        }
+
+        .status-indicator {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .status-indicator.uploaded {
+            background: #d1fae5;
+            color: var(--success);
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-indicator.not-uploaded {
+            background: #fee2e2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+        }
+
+        .timeline-admin-item, .achievement-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Main Portfolio Styles */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            z-index: 2;
+            animation: fadeInUp 1.5s ease-out;
+            max-width: 900px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hero-photo {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 6px solid var(--accent);
+            object-fit: cover;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            animation: fadeInLeft 1.5s ease-out;
+        }
+
+        .hero-text {
+            flex: 1;
+            min-width: 400px;
+            text-align: left;
+            animation: fadeInRight 1.5s ease-out;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            letter-spacing: -1px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-title .name-highlight {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            color: #e2e8f0;
+        }
+
+        .hero-journey-highlight {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0 30px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-journey-title {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-journey-subtitle {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .hero-journey-description {
+            color: #cbd5e0;
+            font-size: 1rem;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            line-height: 1.7;
+            color: #cbd5e0;
+        }
+        
+        .cta-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .cta-button {
+            background: var(--accent);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--accent);
+        }
+
+        .cta-button.secondary:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            background: #2563eb;
+        }
+
+        .qr-code-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-left: 20px;
+        }
+
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .qr-code:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+            transform: scale(1.05);
+        }
+
+        .qr-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            color: var(--accent);
+        }
+        
+        .scroll-arrow {
+            width: 24px;
+            height: 24px;
+            border-right: 3px solid currentColor;
+            border-bottom: 3px solid currentColor;
+            transform: rotate(45deg);
+            margin: 0 auto;
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .nav-item {
+            display: block;
+            color: var(--text-dark);
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .nav-item:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateX(-3px);
+        }
+
+        /* Sections */
+        .section {
+            padding: 100px 30px;
+        }
+
+        .section-light {
+            background: var(--background-light);
+        }
+
+        .section-white {
+            background: white;
+        }
+
+        .section-dark {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .section-title {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            font-weight: 300;
+            letter-spacing: -1px;
+        }
+
+        .section-title.white {
+            color: white;
+        }
+
+        .section-title .accent {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .section-subtitle.white {
+            color: #cbd5e0;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            margin-bottom: 60px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+            border-color: var(--accent);
+        }
+        
+        .timeline-content.left {
+            margin-right: 55%;
+        }
+        
+        .timeline-content.right {
+            margin-left: 55%;
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            z-index: 10;
+            border: 4px solid white;
+            font-weight: bold;
+        }
+        
+        .timeline-content.left .timeline-icon {
+            right: -75px;
+        }
+        
+        .timeline-content.right .timeline-icon {
+            left: -75px;
+        }
+        
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-title {
+            color: var(--text-dark);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .timeline-description {
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        
+        .timeline-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag {
+            background: var(--background-light);
+            color: var(--text-dark);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .tag:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .stats-highlight {
+            background: linear-gradient(135deg, var(--accent), var(--primary-dark));
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        /* Skills Grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .skill-card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+            transition: left 0.3s ease;
+        }
+        
+        .skill-card:hover::before {
+            left: 0;
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+            border-color: var(--accent);
+        }
+        
+        .skill-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .skill-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .skill-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* eLogbook Section */
+        .elogbook-access-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .elogbook-access-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+            border-color: var(--accent);
+        }
+
+        .elogbook-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .elogbook-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .elogbook-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .elogbook-info h3 {
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .elogbook-info p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .elogbook-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border-color: var(--accent);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .elogbook-highlights {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+
+        .elogbook-highlights h3 {
+            color: var(--text-dark);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .highlights-content {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .highlights-content ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .highlights-content li {
+            margin: 8px 0;
+        }
+
+        /* Media Gallery */
+        .media-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .media-tab {
+            background: var(--background-light);
+            color: var(--text-dark);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+        }
+
+        .media-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .media-tab:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .media-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .media-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+            border-color: var(--accent);
+        }
+
+        .media-card img, .media-card video {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .media-card-content {
+            padding: 20px;
+        }
+
+        .media-card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .media-card-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Contact Section */
+        .contact-info {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .contact-item {
+            margin: 25px 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .contact-icon {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .social-links {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .social-link:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+            border-color: var(--accent);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--accent);
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-8px); }
+            60% { transform: translateX(-50%) translateY(-4px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-text {
+                text-align: center;
+                min-width: auto;
+            }
+
+            .hero-photo {
+                width: 220px;
+                height: 220px;
+            }
+
+            .cta-container {
+                justify-content: center;
+            }
+
+            .qr-code-container {
+                margin-left: 0;
+                margin-top: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .hero-subtitle { font-size: 1.2rem; }
+            .section-title { font-size: 2.2rem; }
+            .timeline::before { left: 30px; }
+            .timeline-content.left, .timeline-content.right { 
+                margin: 0 0 0 60px; 
+                padding: 25px 20px;
+            }
+            .timeline-content.left .timeline-icon, 
+            .timeline-content.right .timeline-icon { 
+                left: -75px; 
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            .nav-menu, .admin-toggle {
+                position: relative;
+                margin: 10px;
+            }
+            .admin-panel {
+                width: 100%;
+                left: -100%;
+            }
+            .cta-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            .media-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.success {
+            background: var(--success);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Toggle Button -->
+    <button class="admin-toggle" onclick="toggleAdminPanel()">⚙️ EDIT PORTFOLIO</button>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <h2 style="color: var(--text-dark); margin-bottom: 25px; text-align: center; font-weight: 700; font-size: 1.5rem;">PORTFOLIO MANAGEMENT</h2>
+        
+        <!-- Professional Photo Upload -->
+        <div class="admin-section">
+            <h3>📸 PROFESSIONAL PHOTO</h3>
+            <div class="upload-section" onclick="document.getElementById('photoFile').click()">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📷</div>
+                <div style="font-weight: 600; margin-bottom: 8px;">UPLOAD PROFESSIONAL HEADSHOT</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    Click to select image file<br>
+                    <small>Recommended: High-resolution, professional attire, clean background</small>
+                </div>
+            </div>
+            <img id="photoPreview" class="photo-preview" alt="Professional Photo Preview">
+            <input type="file" id="photoFile" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+            <div id="photoStatus" class="status-indicator not-uploaded">
+                ❌ No professional photo uploaded
+            </div>
+            <button class="btn btn-danger" onclick="removePhoto()" id="removePhotoBtn" disabled>
+                🗑️ REMOVE PHOTO
+            </button>
+        </div>
+
+        <!-- CV Upload Section -->
+        <div class="admin-section">
+            <h3>📄 CV MANAGEMENT</h3>
+            <div class="upload-section" onclick="document.getElementById('cvFile').click()">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
+                <div style="font-weight: 600; margin-bottom: 8px;">UPLOAD YOUR CV</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    Click to select PDF file<br>
+                    <small>Max size: 10MB | Supported: PDF, DOC, DOCX</small>
+                </div>
+            </div>
+            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleCVUpload(event)">
+            <div id="cvStatus" class="status-indicator not-uploaded">
+                ❌ No CV uploaded
+            </div>
+            <button class="btn btn-success" onclick="testDownload()" id="testCVBtn" disabled>
+                📄 TEST DOWNLOAD
+            </button>
+            <button class="btn btn-danger" onclick="removeCv()" id="removeCVBtn" disabled>
+                🗑️ REMOVE CV
+            </button>
+        </div>
+
+        <!-- QR Code Management -->
+        <div class="admin-section">
+            <h3>📱 QR CODE INTEGRATION</h3>
+            <div class="form-group">
+                <label>Portfolio URL (for QR code):</label>
+                <input type="url" id="portfolioUrl" placeholder="https://yourportfolio.com" onchange="generateQRCode()">
+            </div>
+            <div class="form-group">
+                <label>QR Code Display Text:</label>
+                <input type="text" id="qrDisplayText" value="SCAN TO VIEW" onchange="updateQRLabel()">
+            </div>
+            <div style="text-align: center; margin: 20px 0;">
+                <canvas id="qrCanvas" width="200" height="200" style="border: 2px solid var(--border); border-radius: 8px; display: none;"></canvas>
+                <div id="qrPreview" style="margin-top: 15px; font-size: 0.9rem; color: var(--text-light);">Enter URL to generate QR code</div>
+            </div>
+            <button class="btn btn-primary" onclick="generateQRCode()">GENERATE QR CODE</button>
+            <button class="btn btn-success" onclick="testQRCode()">📱 TEST QR CODE</button>
+        </div>
+
+        <!-- eLogbook Integration -->
+        <div class="admin-section">
+            <h3>📋 ELOGBOOK INTEGRATION</h3>
+            <div class="form-group">
+                <label>eLogbook Platform:</label>
+                <select id="elogbookPlatform">
+                    <option value="elogbook.org">eLogbook.org</option>
+                    <option value="medsurgical">MedSurgical eLogbook</option>
+                    <option value="surgilogbook">SurgiLogbook</option>
+                    <option value="custom">Custom Platform</option>
+                    <option value="other">Other Platform</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Public Profile URL:</label>
+                <input type="url" id="elogbookUrl" placeholder="https://elogbook.org/profile/your-username">
+            </div>
+            <div class="form-group">
+                <label>Total Cases Logged:</label>
+                <input type="number" id="totalCases" placeholder="150">
+            </div>
+            <div class="form-group">
+                <label>Primary Specialties:</label>
+                <input type="text" id="primarySpecialties" placeholder="General Surgery, Orthopedics, ENT">
+            </div>
+            <div class="form-group">
+                <label>Key Statistics/Highlights:</label>
+                <textarea id="elogbookHighlights" rows="3" placeholder="50+ laparoscopic procedures, 25+ emergency cases, Advanced level in appendectomy"></textarea>
+            </div>
+            <div id="elogbookStatus" class="status-indicator not-uploaded">
+                ❌ No eLogbook integration set up
+            </div>
+            <button class="btn btn-primary" onclick="updateElogbook()">UPDATE ELOGBOOK</button>
+            <button class="btn btn-success" onclick="testElogbook()">📄 TEST ACCESS</button>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="admin-section">
+            <h3>👤 PERSONAL INFORMATION</h3>
+            <div class="form-group">
+                <label>Full Name:</label>
+                <input type="text" id="fullName" placeholder="Dr. John Smith, MD">
+            </div>
+            <div class="form-group">
+                <label>Professional Title:</label>
+                <input type="text" id="subtitle" placeholder="Surgical Residency Candidate">
+            </div>
+            <div class="form-group">
+                <label>Professional Summary:</label>
+                <textarea id="heroDescription" rows="3" placeholder="Brief professional summary highlighting your surgical journey"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="updatePersonalInfo()">UPDATE INFO</button>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="admin-section">
+            <h3>📧 CONTACT INFORMATION</h3>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="email" placeholder="doctor@example.com">
+            </div>
+            <div class="form-group">
+                <label>Phone:</label>
+                <input type="tel" id="phone" placeholder="+1 (555) 123-4567">
+            </div>
+            <div class="form-group">
+                <label>LinkedIn:</label>
+                <input type="url" id="linkedin" placeholder="https://linkedin.com/in/drsmith">
+            </div>
+            <div class="form-group">
+                <label>Location:</label>
+                <input type="text" id="location" placeholder="New York, NY">
+            </div>
+            <button class="btn btn-primary" onclick="updateContactInfo()">UPDATE CONTACT</button>
+        </div>
+
+        <!-- Timeline Events -->
+        <div class="admin-section">
+            <h3>📅 PROFESSIONAL TIMELINE</h3>
+            <div id="timelineEvents"></div>
+            <button class="btn btn-success" onclick="addTimelineEvent()">+ ADD MILESTONE</button>
+        </div>
+
+        <!-- Skills -->
+        <div class="admin-section">
+            <h3>🏆 COMPETENCIES</h3>
+            <div id="skillsAchievements"></div>
+            <button class="btn btn-success" onclick="addSkill()">+ ADD COMPETENCY</button>
+        </div>
+
+        <!-- Data Management -->
+        <div class="admin-section">
+            <h3>💾 DATA MANAGEMENT</h3>
+            <button class="btn btn-primary" onclick="exportData()">EXPORT DATA</button>
+            <button class="btn btn-primary" onclick="importData()">IMPORT DATA</button>
+            <button class="btn btn-success" onclick="saveData()">SAVE ALL</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu">
+        <a href="#hero" class="nav-item">🏠 HOME</a>
+        <a href="#timeline" class="nav-item">📋 EXPERIENCE</a>
+        <a href="#skills" class="nav-item">🎯 COMPETENCIES</a>
+        <a href="#elogbook" class="nav-item">📋 ELOGBOOK</a>
+        <a href="#media" class="nav-item">📸 GALLERY</a>
+        <a href="#contact" class="nav-item">📧 CONTACT</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <img id="heroPhoto" class="hero-photo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23f1f5f9'/%3E%3Ctext x='200' y='180' text-anchor='middle' font-family='Georgia' font-size='24' fill='%232d3748'%3EProfessional%3C/text%3E%3Ctext x='200' y='210' text-anchor='middle' font-family='Georgia' font-size='24' fill='%232d3748'%3EPhoto%3C/text%3E%3Ctext x='200' y='240' text-anchor='middle' font-family='Georgia' font-size='16' fill='%234a5568'%3EUpload in Admin%3C/text%3E%3C/svg%3E" alt="Professional Photo">
+            
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="name-highlight" id="heroName">Dr. [Your Name]</span><br>
+                    <span style="font-size: 1.8rem; font-weight: 400;">MD Candidate</span>
+                </h1>
+                <p class="hero-subtitle" id="heroSubtitle">Surgical Residency Candidate</p>
+                
+                <!-- Journey Highlight Section -->
+                <div class="hero-journey-highlight">
+                    <div class="hero-journey-title">My Surgical Journey</div>
+                    <div class="hero-journey-subtitle">From Child Observer to Future Surgeon</div>
+                    <div class="hero-journey-description">A 20-year odyssey of passion, innovation, and unwavering dedication to surgical excellence. From watching my father save lives during military operations to creating my own medical devices.</div>
+                </div>
+                
+                <p class="hero-description" id="heroDescription">
+                    A dedicated medical professional with 20+ years of surgical exposure, innovative research background, and unwavering commitment to advancing surgical care through evidence-based practice and technological innovation.
+                </p>
+                <div class="cta-container">
+                    <button class="cta-button" onclick="scrollToSection('timeline')">
+                        📋 VIEW EXPERIENCE
+                    </button>
+                    <button class="cta-button secondary" onclick="downloadCV()" id="downloadCVBtn" disabled>
+                        📄 DOWNLOAD CV
+                    </button>
+                    <div class="qr-code-container">
+                        <canvas id="heroQRCode" class="qr-code" width="80" height="80"></canvas>
+                        <div class="qr-label" id="qrLabel">SCAN TO VIEW</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator" onclick="scrollToSection('timeline')">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="section section-light">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Professional <span class="accent">Timeline</span></h2>
+                <p class="section-subtitle">
+                    A comprehensive overview of my surgical journey, academic achievements, 
+                    and professional development milestones
+                </p>
+            </div>
+            
+            <div class="timeline" id="timelineContainer"></div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section section-white">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Core <span class="accent">Competencies</span></h2>
+                <p class="section-subtitle">
+                    Evidence-based expertise developed through rigorous training, 
+                    continuous learning, and practical application
+                </p>
+            </div>
+            
+            <div class="skills-grid" id="skillsContainer"></div>
+        </div>
+    </section>
+
+    <!-- eLogbook Section -->
+    <section id="elogbook" class="section section-light">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Surgical <span class="accent">eLogbook</span></h2>
+                <p class="section-subtitle">
+                    Comprehensive documentation of surgical cases, procedures, and progressive skill development
+                </p>
+            </div>
+
+            <!-- eLogbook Access Card -->
+            <div class="elogbook-access-card">
+                <div class="elogbook-header">
+                    <div class="elogbook-icon">📋</div>
+                    <div class="elogbook-info">
+                        <h3 id="elogbookPlatformDisplay">eLogbook Platform</h3>
+                        <p id="elogbookStatusDisplay">Configure your eLogbook integration in admin panel</p>
+                    </div>
+                    <button class="cta-button" id="accessElogbookBtn" onclick="accessElogbook()" disabled>
+                        📋 NOT CONFIGURED
+                    </button>
+                </div>
+            </div>
+
+            <!-- eLogbook Statistics -->
+            <div class="elogbook-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCasesDisplay">0</div>
+                    <div class="stat-label">Total Cases</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="specialtiesCountDisplay">0</div>
+                    <div class="stat-label">Specialties</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="experienceMonthsDisplay">0</div>
+                    <div class="stat-label">Months Experience</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Documentation Rate</div>
+                </div>
+            </div>
+
+            <!-- eLogbook Highlights -->
+            <div class="elogbook-highlights">
+                <h3>📊 Key Achievements & Statistics</h3>
+                <div class="highlights-content" id="elogbookHighlightsContent">
+                    <p>Set up your eLogbook integration to display your surgical case statistics and achievements here.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Media Gallery Section -->
+    <section id="media" class="section section-white">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Professional <span class="accent">Gallery</span></h2>
+                <p class="section-subtitle">
+                    Visual documentation of surgical skills, research contributions, 
+                    and professional achievements
+                </p>
+            </div>
+
+            <div class="media-tabs">
+                <div class="media-tab active" onclick="filterMedia('all')">ALL MEDIA</div>
+                <div class="media-tab" onclick="filterMedia('surgical')">SURGICAL SKILLS</div>
+                <div class="media-tab" onclick="filterMedia('research')">RESEARCH</div>
+                <div class="media-tab" onclick="filterMedia('certifications')">CERTIFICATIONS</div>
+                <div class="media-tab" onclick="filterMedia('innovations')">INNOVATIONS</div>
+            </div>
+
+            <div class="media-grid" id="mediaGallery">
+                <div class="media-card" data-category="innovations">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f1f5f9'/%3E%3Ctext x='200' y='90' text-anchor='middle' font-family='Georgia' font-size='18' fill='%232d3748'%3ESelf-Built Laparoscopic%3C/text%3E%3Ctext x='200' y='115' text-anchor='middle' font-family='Georgia' font-size='18' fill='%232d3748'%3ESimulator%3C/text%3E%3Ctext x='200' y='140' text-anchor='middle' font-family='Georgia' font-size='12' fill='%234a5568'%3EUpload your media%3C/text%3E%3C/svg%3E" alt="Simulator">
+                    <div class="media-card-content">
+                        <h3 class="media-card-title">Self-Built Laparoscopic Simulator</h3>
+                        <p class="media-card-description">Innovative glass-constructed simulator for personal surgical skill development and training efficiency.</p>
+                    </div>
+                </div>
+                <div class="media-card" data-category="research">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f1f5f9'/%3E%3Ctext x='200' y='90' text-anchor='middle' font-family='Georgia' font-size='18' fill='%232d3748'%3EResearch Publications%3C/text%3E%3Ctext x='200' y='115' text-anchor='middle' font-family='Georgia' font-size='18' fill='%232d3748'%3E%26 Presentations%3C/text%3E%3Ctext x='200' y='140' text-anchor='middle' font-family='Georgia' font-size='12' fill='%234a5568'%3EUpload research media%3C/text%3E%3C/svg%3E" alt="Research">
+                    <div class="media-card-content">
+                        <h3 class="media-card-title">Research Publications</h3>
+                        <p class="media-card-description">Clinical audits, medical device innovation research, and evidence-based practice studies.</p>
+                    </div>
+                </div>
+                <div class="media-card" data-category="certifications">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23f1f5f9'/%3E%3Ctext x='200' y='90' text-anchor='middle' font-family='Georgia' font-size='18' fill='%232d3748'%3EACS Membership%3C/text%3E%3Ctext x='200' y='115' text-anchor='middle' font-family='Georgia' font-size='18' fill='%232d3748'%3E%26 Certifications%3C/text%3E%3Ctext x='200' y='140' text-anchor='middle' font-family='Georgia' font-size='12' fill='%234a5568'%3EUpload certificates%3C/text%3E%3C/svg%3E" alt="Certifications">
+                    <div class="media-card-content">
+                        <h3 class="media-card-title">Professional Certifications</h3>
+                        <p class="media-card-description">ACS membership, Stanford Medicine courses, and international training certificates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section section-dark">
+        <div class="container">
+            <div class="contact-info">
+                <h2 class="section-title white">Professional <span class="accent">Contact</span></h2>
+                <p class="section-subtitle white">Ready to contribute to your surgical residency program</p>
+                
+                <div class="contact-item" id="contactEmail">
+                    <span class="contact-icon">📧</span>
+                    Email: doctor@example.com
+                </div>
+                <div class="contact-item" id="contactPhone">
+                    <span class="contact-icon">📱</span>
+                    Phone: +1 (555) 123-4567
+                </div>
+                <div class="contact-item" id="contactLinkedIn">
+                    <span class="contact-icon">🌐</span>
+                    LinkedIn: linkedin.com/in/drsmith
+                </div>
+                <div class="contact-item" id="contactLocation">
+                    <span class="contact-icon">📍</span>
+                    Location: Available for relocation
+                </div>
+
+                <div class="social-links">
+                    <a href="#" class="social-link" title="LinkedIn">💼</a>
+                    <a href="#" class="social-link" title="ResearchGate">🔬</a>
+                    <a href="#" class="social-link" title="ORCID">📚</a>
+                    <a href="#" class="social-link" title="Email">📧</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Include QR Code library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+    <script>
+        // Portfolio Data with all original features preserved
+        let portfolioData = {
+            personal: {
+                fullName: "Dr. [Your Name]",
+                subtitle: "Surgical Residency Candidate",
+                heroDescription: "A dedicated medical professional with 20+ years of surgical exposure, innovative research background, and unwavering commitment to advancing surgical care through evidence-based practice and technological innovation.",
+                photoUrl: null
+            },
+            contact: {
+                email: "doctor@example.com",
+                phone: "+1 (555) 123-4567",
+                linkedin: "linkedin.com/in/drsmith",
+                location: "Available for relocation"
+            },
+            elogbook: {
+                platform: "elogbook.org",
+                url: "",
+                totalCases: 0,
+                specialties: "",
+                highlights: "",
+                isConfigured: false
+            },
+            qrCode: {
+                url: "",
+                displayText: "SCAN TO VIEW",
+                isGenerated: false
+            },
+            timelineEvents: [
+                {
+                    id: 1,
+                    year: "Ages 8-9 | 2010-2011",
+                    title: "Early Surgical Exposure",
+                    description: "Witnessed first surgical procedures during military operations in Samarbagh tribal area. Observed hundreds of trauma cases under father's supervision, developing early fascination with surgical precision and life-saving interventions.",
+                    icon: "🏥",
+                    side: "left",
+                    tags: ["Military Operations", "Trauma Surgery", "Early Exposure", "Emergency Medicine"],
+                    highlight: "🏥 Hundreds of trauma cases observed | 🩸 Emergency surgeries witnessed daily"
+                },
+                {
+                    id: 2,
+                    year: "School Years | 2012-2018",
+                    title: "Academic Excellence & Medical Foundation",
+                    description: "Maintained top academic performance while developing advanced medical knowledge. Memorized complex medical protocols, accompanied father to multiple border postings, gaining exposure to diverse surgical challenges.",
+                    icon: "📚",
+                    side: "right",
+                    tags: ["Academic Excellence", "Medical Knowledge", "Border Experience", "Early Learning"],
+                    highlight: "🏆 Consistent top rankings | 💊 Advanced medical protocols mastered"
+                },
+                {
+                    id: 3,
+                    year: "Medical School Entry | 2020",
+                    title: "Medical School Admission & Advanced Preparation",
+                    description: "Successfully entered medical school after rigorous preparation. Pre-studied advanced concepts including Action Potential from Guyton's textbook, demonstrating commitment to excellence and forward-thinking approach.",
+                    icon: "🎓",
+                    side: "left",
+                    tags: ["Medical School", "Advanced Preparation", "Guyton Physiology", "Academic Achievement"],
+                    highlight: "🎯 Medical school entrance success | 📖 Advanced physiology mastered pre-admission"
+                },
+                {
+                    id: 4,
+                    year: "MBBS Years 1-2 | 2020-2022",
+                    title: "Leadership Development & International Exposure",
+                    description: "Developed leadership skills through literary society involvement. Organized community blood donation campaigns. Attended first international conference with hands-on laparoscopic device experience.",
+                    icon: "🌐",
+                    side: "right",
+                    tags: ["Leadership", "International Conference", "Laparoscopic Training", "Community Service"],
+                    highlight: "🎤 Leadership positions held | 🩸 Community health initiatives led"
+                },
+                {
+                    id: 5,
+                    year: "MBBS Year 3 | 2022-2023",
+                    title: "Advanced Surgical Training",
+                    description: "Intensive surgical rotations focusing exclusively on surgical specialties. Personal laparoscopic simulator training. Completed Stanford Medicine webinars and specialized courses with Association of Surgeons of India.",
+                    icon: "🔬",
+                    side: "left",
+                    tags: ["Surgical Rotations", "Laparoscopic Skills", "Stanford Medicine", "Professional Training"],
+                    highlight: "🏠 Personal simulation training | 🎓 International certification earned"
+                },
+                {
+                    id: 6,
+                    year: "MBBS Year 4 | 2023-2024",
+                    title: "Research Innovation & Professional Recognition",
+                    description: "USMLE preparation combined with active research and clinical audits. Achieved American College of Surgeons student membership. Self-constructed innovative laparoscopic simulator.",
+                    icon: "🚀",
+                    side: "right",
+                    tags: ["USMLE", "ACS Membership", "Research", "Innovation", "Device Development"],
+                    highlight: "🏆 ACS Student Member | 🔬 Self-built surgical simulator"
+                },
+                {
+                    id: 7,
+                    year: "Future Goals | 2024-2030",
+                    title: "Surgical Residency & Subspecialty Training",
+                    description: "Pursuing General Surgery residency with focus on Hepato-Pancreato-Biliary (HPB) surgery subspecialization. Planning robotic surgery training at prestigious institutions.",
+                    icon: "⭐",
+                    side: "left",
+                    tags: ["General Surgery", "HPB Surgery", "Robotic Training", "Innovation"],
+                    highlight: "🎯 HPB Surgery Specialization Target | 🤖 Robotic Surgery Training Planned"
+                }
+            ],
+            skills: [
+                {
+                    id: 1,
+                    icon: "🏆",
+                    title: "Academic Excellence",
+                    description: "Consistent top performance throughout academic career with demonstrated ability to master complex medical concepts ahead of curriculum requirements."
+                },
+                {
+                    id: 2,
+                    icon: "🔬",
+                    title: "Research & Innovation",
+                    description: "Active researcher with clinical audits, medical device development expertise, and demonstrated ability to translate clinical needs into practical solutions."
+                },
+                {
+                    id: 3,
+                    icon: "⚕️",
+                    title: "Surgical Aptitude",
+                    description: "20+ years of surgical exposure, advanced laparoscopic simulation training, and natural surgical instincts developed through extensive observation."
+                },
+                {
+                    id: 4,
+                    icon: "🌟",
+                    title: "Professional Development",
+                    description: "ACS membership, international course certifications, and commitment to continuous learning through structured professional development."
+                },
+                {
+                    id: 5,
+                    icon: "💡",
+                    title: "Innovation & Entrepreneurship",
+                    description: "Medical device innovation, surgical equipment development, and entrepreneurial ventures in healthcare technology advancement."
+                },
+                {
+                    id: 6,
+                    icon: "🌐",
+                    title: "Global Healthcare Perspective",
+                    description: "Experience in resource-limited settings, understanding of diverse healthcare challenges, and adaptability to various clinical environments."
+                }
+            ]
+        };
+
+        // File storage
+        let uploadedFiles = {
+            cv: null,
+            photo: null
+        };
+
+        // QR Code Functions
+        function generateQRCode() {
+            const url = document.getElementById('portfolioUrl').value;
+            if (!url) {
+                showNotification('Please enter a portfolio URL first', 'error');
+                return;
+            }
+
+            try {
+                // Generate QR code for admin preview
+                const qrCanvas = document.getElementById('qrCanvas');
+                const qr = new QRious({
+                    element: qrCanvas,
+                    value: url,
+                    size: 200,
+                    background: 'white',
+                    foreground: '#374151',
+                    level: 'M'
+                });
+
+                qrCanvas.style.display = 'block';
+                document.getElementById('qrPreview').textContent = `QR Code generated for: ${url}`;
+
+                // Generate smaller QR code for hero section
+                const heroQRCanvas = document.getElementById('heroQRCode');
+                const heroQR = new QRious({
+                    element: heroQRCanvas,
+                    value: url,
+                    size: 80,
+                    background: 'rgba(255,255,255,0.9)',
+                    foreground: '#374151',
+                    level: 'M'
+                });
+
+                portfolioData.qrCode.url = url;
+                portfolioData.qrCode.isGenerated = true;
+                saveData();
+                showNotification('QR Code generated successfully!');
+            } catch (error) {
+                showNotification('Error generating QR code. Please check the URL format.', 'error');
+            }
+        }
+
+        function updateQRLabel() {
+            const newLabel = document.getElementById('qrDisplayText').value;
+            document.getElementById('qrLabel').textContent = newLabel;
+            portfolioData.qrCode.displayText = newLabel;
+            saveData();
+        }
+
+        function testQRCode() {
+            if (portfolioData.qrCode.url) {
+                window.open(portfolioData.qrCode.url, '_blank');
+                showNotification('QR Code test successful!');
+            } else {
+                showNotification('Please generate a QR code first', 'error');
+            }
+        }
+
+        // Admin Panel Functions
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
+            
+            if (panel.classList.contains('active')) {
+                loadAdminData();
+            }
+        }
+
+        function loadAdminData() {
+            // Load personal data
+            document.getElementById('fullName').value = portfolioData.personal.fullName;
+            document.getElementById('subtitle').value = portfolioData.personal.subtitle;
+            document.getElementById('heroDescription').value = portfolioData.personal.heroDescription;
+            
+            // Load contact data
+            document.getElementById('email').value = portfolioData.contact.email;
+            document.getElementById('phone').value = portfolioData.contact.phone;
+            document.getElementById('linkedin').value = portfolioData.contact.linkedin;
+            document.getElementById('location').value = portfolioData.contact.location;
+            
+            // Load QR code data
+            document.getElementById('portfolioUrl').value = portfolioData.qrCode.url;
+            document.getElementById('qrDisplayText').value = portfolioData.qrCode.displayText;
+            
+            // Load eLogbook data
+            document.getElementById('elogbookPlatform').value = portfolioData.elogbook.platform;
+            document.getElementById('elogbookUrl').value = portfolioData.elogbook.url;
+            document.getElementById('totalCases').value = portfolioData.elogbook.totalCases;
+            document.getElementById('primarySpecialties').value = portfolioData.elogbook.specialties;
+            document.getElementById('elogbookHighlights').value = portfolioData.elogbook.highlights;
+            
+            loadTimelineAdmin();
+            loadSkillsAdmin();
+            updateElogbookDisplay();
+            
+            // Regenerate QR code if exists
+            if (portfolioData.qrCode.isGenerated && portfolioData.qrCode.url) {
+                generateQRCode();
+            }
+        }
+
+        // Photo Functions
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoPreview = document.getElementById('photoPreview');
+                    const photoStatus = document.getElementById('photoStatus');
+                    const heroPhoto = document.getElementById('heroPhoto');
+                    
+                    photoPreview.src = e.target.result;
+                    photoPreview.classList.add('visible');
+                    heroPhoto.src = e.target.result;
+                    
+                    photoStatus.textContent = `✅ Photo uploaded: ${file.name}`;
+                    photoStatus.className = 'status-indicator uploaded';
+                    
+                    document.getElementById('removePhotoBtn').disabled = false;
+                    
+                    portfolioData.personal.photoUrl = e.target.result;
+                    uploadedFiles.photo = file;
+                    saveData();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removePhoto() {
+            const photoPreview = document.getElementById('photoPreview');
+            const photoStatus = document.getElementById('photoStatus');
+            const heroPhoto = document.getElementById('heroPhoto');
+            
+            photoPreview.classList.remove('visible');
+            photoStatus.textContent = '❌ No professional photo uploaded';
+            photoStatus.className = 'status-indicator not-uploaded';
+            
+            heroPhoto.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23f1f5f9'/%3E%3Ctext x='200' y='180' text-anchor='middle' font-family='Georgia' font-size='24' fill='%232d3748'%3EProfessional%3C/text%3E%3Ctext x='200' y='210' text-anchor='middle' font-family='Georgia' font-size='24' fill='%232d3748'%3EPhoto%3C/text%3E%3Ctext x='200' y='240' text-anchor='middle' font-family='Georgia' font-size='16' fill='%234a5568'%3EUpload in Admin%3C/text%3E%3C/svg%3E";
+            
+            document.getElementById('removePhotoBtn').disabled = true;
+            document.getElementById('photoFile').value = '';
+            
+            portfolioData.personal.photoUrl = null;
+            uploadedFiles.photo = null;
+            saveData();
+        }
+
+        // CV Functions
+        function handleCVUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    showNotification('File size exceeds 10MB limit. Please choose a smaller file.', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const cvStatus = document.getElementById('cvStatus');
+                    const downloadBtn = document.getElementById('downloadCVBtn');
+                    const testBtn = document.getElementById('testCVBtn');
+                    const removeBtn = document.getElementById('removeCVBtn');
+                    
+                    cvStatus.textContent = `✅ CV uploaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                    cvStatus.className = 'status-indicator uploaded';
+                    
+                    downloadBtn.disabled = false;
+                    testBtn.disabled = false;
+                    removeBtn.disabled = false;
+                    
+                    uploadedFiles.cv = {
+                        name: file.name,
+                        data: e.target.result,
+                        type: file.type
+                    };
+                    
+                    saveData();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function downloadCV() {
+            if (uploadedFiles.cv) {
+                const link = document.createElement('a');
+                link.href = uploadedFiles.cv.data;
+                link.download = uploadedFiles.cv.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                showNotification('Please upload a CV first in the admin panel.', 'error');
+            }
+        }
+
+        function testDownload() {
+            if (uploadedFiles.cv) {
+                downloadCV();
+                showNotification('CV download test successful!');
+            } else {
+                showNotification('No CV available for testing.', 'error');
+            }
+        }
+
+        function removeCv() {
+            if (confirm('Are you sure you want to remove the uploaded CV?')) {
+                const cvStatus = document.getElementById('cvStatus');
+                const downloadBtn = document.getElementById('downloadCVBtn');
+                const testBtn = document.getElementById('testCVBtn');
+                const removeBtn = document.getElementById('removeCVBtn');
+                
+                cvStatus.textContent = '❌ No CV uploaded';
+                cvStatus.className = 'status-indicator not-uploaded';
+                
+                downloadBtn.disabled = true;
+                testBtn.disabled = true;
+                removeBtn.disabled = true;
+                
+                document.getElementById('cvFile').value = '';
+                uploadedFiles.cv = null;
+                saveData();
+            }
+        }
+
+        // eLogbook Functions
+        function updateElogbook() {
+            portfolioData.elogbook.platform = document.getElementById('elogbookPlatform').value;
+            portfolioData.elogbook.url = document.getElementById('elogbookUrl').value;
+            portfolioData.elogbook.totalCases = parseInt(document.getElementById('totalCases').value) || 0;
+            portfolioData.elogbook.specialties = document.getElementById('primarySpecialties').value;
+            portfolioData.elogbook.highlights = document.getElementById('elogbookHighlights').value;
+            
+            portfolioData.elogbook.isConfigured = portfolioData.elogbook.url || portfolioData.elogbook.totalCases > 0;
+            
+            updateElogbookDisplay();
+            updateElogbookStatus();
+            saveData();
+            showNotification('eLogbook integration updated!');
+        }
+
+        function updateElogbookDisplay() {
+            const platformDisplay = document.getElementById('elogbookPlatformDisplay');
+            const statusDisplay = document.getElementById('elogbookStatusDisplay');
+            const accessBtn = document.getElementById('accessElogbookBtn');
+            
+            if (platformDisplay) {
+                platformDisplay.textContent = portfolioData.elogbook.platform.charAt(0).toUpperCase() + portfolioData.elogbook.platform.slice(1) + ' eLogbook';
+            }
+            
+            if (statusDisplay && accessBtn) {
+                if (portfolioData.elogbook.url) {
+                    statusDisplay.textContent = 'Public profile linked - Click to view surgical cases';
+                    accessBtn.disabled = false;
+                    accessBtn.textContent = '📋 VIEW ELOGBOOK';
+                } else if (portfolioData.elogbook.totalCases > 0) {
+                    statusDisplay.textContent = `${portfolioData.elogbook.totalCases} cases logged - Configure access for full integration`;
+                    accessBtn.disabled = true;
+                    accessBtn.textContent = '📋 CONFIGURE ACCESS';
+                } else {
+                    statusDisplay.textContent = 'Configure your eLogbook integration in admin panel';
+                    accessBtn.disabled = true;
+                    accessBtn.textContent = '📋 NOT CONFIGURED';
+                }
+            }
+            
+            // Update statistics
+            const totalCasesDisplay = document.getElementById('totalCasesDisplay');
+            const specialtiesCountDisplay = document.getElementById('specialtiesCountDisplay');
+            const experienceMonthsDisplay = document.getElementById('experienceMonthsDisplay');
+            
+            if (totalCasesDisplay) totalCasesDisplay.textContent = portfolioData.elogbook.totalCases || '0';
+            
+            if (specialtiesCountDisplay) {
+                const specialtiesCount = portfolioData.elogbook.specialties ? portfolioData.elogbook.specialties.split(',').length : 0;
+                specialtiesCountDisplay.textContent = specialtiesCount;
+            }
+            
+            if (experienceMonthsDisplay) {
+                const experienceMonths = Math.ceil(portfolioData.elogbook.totalCases / 10) || 0;
+                experienceMonthsDisplay.textContent = experienceMonths;
+            }
+            
+            // Update highlights
+            const highlightsContent = document.getElementById('elogbookHighlightsContent');
+            if (highlightsContent) {
+                if (portfolioData.elogbook.highlights) {
+                    const highlightsArray = portfolioData.elogbook.highlights.split(',').map(h => h.trim()).filter(h => h);
+                    if (highlightsArray.length > 0) {
+                        highlightsContent.innerHTML = `
+                            <ul>
+                                ${highlightsArray.map(highlight => `<li>${highlight}</li>`).join('')}
+                            </ul>
+                            ${portfolioData.elogbook.specialties ? `<p><strong>Primary Specialties:</strong> ${portfolioData.elogbook.specialties}</p>` : ''}
+                        `;
+                    } else {
+                        highlightsContent.innerHTML = '<p>Set up your eLogbook integration to display your surgical case statistics and achievements here.</p>';
+                    }
+                } else {
+                    highlightsContent.innerHTML = '<p>Set up your eLogbook integration to display your surgical case statistics and achievements here.</p>';
+                }
+            }
+        }
+
+        function updateElogbookStatus() {
+            const statusElement = document.getElementById('elogbookStatus');
+            if (statusElement) {
+                if (portfolioData.elogbook.isConfigured) {
+                    statusElement.textContent = `✅ eLogbook configured: ${portfolioData.elogbook.platform} - ${portfolioData.elogbook.totalCases} cases`;
+                    statusElement.className = 'status-indicator uploaded';
+                } else {
+                    statusElement.textContent = '❌ No eLogbook integration set up';
+                    statusElement.className = 'status-indicator not-uploaded';
+                }
+            }
+        }
+
+        function accessElogbook() {
+            if (portfolioData.elogbook.url) {
+                window.open(portfolioData.elogbook.url, '_blank');
+            } else {
+                showNotification('Please configure eLogbook access in admin panel first', 'error');
+            }
+        }
+
+        function testElogbook() {
+            if (portfolioData.elogbook.url) {
+                const testWindow = window.open(portfolioData.elogbook.url, '_blank');
+                if (testWindow) {
+                    showNotification('eLogbook access test successful!');
+                } else {
+                    showNotification('Could not open eLogbook URL. Check your browser settings.', 'error');
+                }
+            } else if (portfolioData.elogbook.totalCases > 0) {
+                showNotification('eLogbook data configured successfully!');
+            } else {
+                showNotification('Please configure your eLogbook integration first', 'error');
+            }
+        }
+
+        // Update Functions
+        function updatePersonalInfo() {
+            portfolioData.personal.fullName = document.getElementById('fullName').value;
+            portfolioData.personal.subtitle = document.getElementById('subtitle').value;
+            portfolioData.personal.heroDescription = document.getElementById('heroDescription').value;
+            
+            document.getElementById('heroName').textContent = portfolioData.personal.fullName;
+            document.getElementById('heroSubtitle').textContent = portfolioData.personal.subtitle;
+            document.getElementById('heroDescription').textContent = portfolioData.personal.heroDescription;
+            
+            saveData();
+            showNotification('Personal information updated successfully!');
+        }
+
+        function updateContactInfo() {
+            portfolioData.contact.email = document.getElementById('email').value;
+            portfolioData.contact.phone = document.getElementById('phone').value;
+            portfolioData.contact.linkedin = document.getElementById('linkedin').value;
+            portfolioData.contact.location = document.getElementById('location').value;
+            
+            document.getElementById('contactEmail').innerHTML = `<span class="contact-icon">📧</span>Email: ${portfolioData.contact.email}`;
+            document.getElementById('contactPhone').innerHTML = `<span class="contact-icon">📱</span>Phone: ${portfolioData.contact.phone}`;
+            document.getElementById('contactLinkedIn').innerHTML = `<span class="contact-icon">🌐</span>LinkedIn: ${portfolioData.contact.linkedin}`;
+            document.getElementById('contactLocation').innerHTML = `<span class="contact-icon">📍</span>Location: ${portfolioData.contact.location}`;
+            
+            saveData();
+            showNotification('Contact information updated successfully!');
+        }
+
+        // Timeline Functions
+        function loadTimelineAdmin() {
+            const container = document.getElementById('timelineEvents');
+            container.innerHTML = '';
+            
+            portfolioData.timelineEvents.forEach((event) => {
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'timeline-admin-item';
+                eventDiv.innerHTML = `
+                    <div class="form-group">
+                        <label>Year/Period:</label>
+                        <input type="text" value="${event.year}" onchange="updateTimelineEvent(${event.id}, 'year', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" value="${event.title}" onchange="updateTimelineEvent(${event.id}, 'title', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea rows="3" onchange="updateTimelineEvent(${event.id}, 'description', this.value)">${event.description}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Icon:</label>
+                        <input type="text" value="${event.icon}" onchange="updateTimelineEvent(${event.id}, 'icon', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Side:</label>
+                        <select onchange="updateTimelineEvent(${event.id}, 'side', this.value)">
+                            <option value="left" ${event.side === 'left' ? 'selected' : ''}>Left</option>
+                            <option value="right" ${event.side === 'right' ? 'selected' : ''}>Right</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags (comma separated):</label>
+                        <input type="text" value="${event.tags.join(', ')}" onchange="updateTimelineEvent(${event.id}, 'tags', this.value.split(', '))">
+                    </div>
+                    <div class="form-group">
+                        <label>Highlight:</label>
+                        <input type="text" value="${event.highlight || ''}" onchange="updateTimelineEvent(${event.id}, 'highlight', this.value)">
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteTimelineEvent(${event.id})">DELETE EVENT</button>
+                `;
+                container.appendChild(eventDiv);
+            });
+        }
+
+        function addTimelineEvent() {
+            const newId = Math.max(...portfolioData.timelineEvents.map(e => e.id)) + 1;
+            const newEvent = {
+                id: newId,
+                year: "New Period",
+                title: "New Achievement",
+                description: "Description of your new achievement",
+                icon: "🎯",
+                side: portfolioData.timelineEvents.length % 2 === 0 ? "left" : "right",
+                tags: ["New Achievement"],
+                highlight: "New milestone highlight"
+            };
+            
+            portfolioData.timelineEvents.push(newEvent);
+            loadTimelineAdmin();
+            renderTimeline();
+            saveData();
+            showNotification('New timeline event added!');
+        }
+
+        function updateTimelineEvent(id, field, value) {
+            const event = portfolioData.timelineEvents.find(e => e.id === id);
+            if (event) {
+                event[field] = value;
+                renderTimeline();
+                saveData();
+            }
+        }
+
+        function deleteTimelineEvent(id) {
+            if (confirm('Are you sure you want to delete this timeline event?')) {
+                portfolioData.timelineEvents = portfolioData.timelineEvents.filter(e => e.id !== id);
+                loadTimelineAdmin();
+                renderTimeline();
+                saveData();
+                showNotification('Timeline event deleted!');
+            }
+        }
+
+        // Skills Functions
+        function loadSkillsAdmin() {
+            const container = document.getElementById('skillsAchievements');
+            container.innerHTML = '';
+            
+            portfolioData.skills.forEach(skill => {
+                const skillDiv = document.createElement('div');
+                skillDiv.className = 'achievement-item';
+                skillDiv.innerHTML = `
+                    <div class="form-group">
+                        <label>Icon:</label>
+                        <input type="text" value="${skill.icon}" onchange="updateSkill(${skill.id}, 'icon', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" value="${skill.title}" onchange="updateSkill(${skill.id}, 'title', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea rows="3" onchange="updateSkill(${skill.id}, 'description', this.value)">${skill.description}</textarea>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteSkill(${skill.id})">DELETE SKILL</button>
+                `;
+                container.appendChild(skillDiv);
+            });
+        }
+
+        function addSkill() {
+            const newId = Math.max(...portfolioData.skills.map(s => s.id)) + 1;
+            const newSkill = {
+                id: newId,
+                icon: "🎯",
+                title: "New Competency",
+                description: "Description of your new skill or competency"
+            };
+            
+            portfolioData.skills.push(newSkill);
+            loadSkillsAdmin();
+            renderSkills();
+            saveData();
+            showNotification('New competency added!');
+        }
+
+        function updateSkill(id, field, value) {
+            const skill = portfolioData.skills.find(s => s.id === id);
+            if (skill) {
+                skill[field] = value;
+                renderSkills();
+                saveData();
+            }
+        }
+
+        function deleteSkill(id) {
+            if (confirm('Are you sure you want to delete this skill?')) {
+                portfolioData.skills = portfolioData.skills.filter(s => s.id !== id);
+                loadSkillsAdmin();
+                renderSkills();
+                saveData();
+                showNotification('Competency deleted!');
+            }
+        }
+
+        // Render Functions
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+            
+            portfolioData.timelineEvents.forEach((event) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item visible';
+                timelineItem.innerHTML = `
+                    <div class="timeline-content ${event.side}">
+                        <div class="timeline-icon">${event.icon}</div>
+                        <div class="timeline-year">${event.year}</div>
+                        <div class="timeline-title">${event.title}</div>
+                        <div class="timeline-description">${event.description}</div>
+                        ${event.highlight ? `<div class="stats-highlight">${event.highlight}</div>` : ''}
+                        <div class="timeline-tags">
+                            ${event.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(timelineItem);
+            });
+        }
+
+        function renderSkills() {
+            const container = document.getElementById('skillsContainer');
+            container.innerHTML = '';
+            
+            portfolioData.skills.forEach(skill => {
+                const skillCard = document.createElement('div');
+                skillCard.className = 'skill-card';
+                skillCard.innerHTML = `
+                    <div class="skill-icon">${skill.icon}</div>
+                    <h3 class="skill-title">${skill.title}</h3>
+                    <p class="skill-description">${skill.description}</p>
+                `;
+                container.appendChild(skillCard);
+            });
+        }
+
+        // Media Functions
+        function filterMedia(category) {
+            document.querySelectorAll('.media-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const mediaCards = document.querySelectorAll('.media-card');
+            mediaCards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Data Functions
+        function saveData() {
+            try {
+                // Store in memory only - no localStorage used
+                console.log('Portfolio data saved in session');
+            } catch (error) {
+                console.error('Error saving data:', error);
+            }
+        }
+
+        function loadData() {
+            updateDisplayFromData();
+        }
+
+        function updateDisplayFromData() {
+            // Update hero section
+            document.getElementById('heroName').textContent = portfolioData.personal.fullName;
+            document.getElementById('heroSubtitle').textContent = portfolioData.personal.subtitle;
+            document.getElementById('heroDescription').textContent = portfolioData.personal.heroDescription;
+            
+            // Update QR label
+            document.getElementById('qrLabel').textContent = portfolioData.qrCode.displayText;
+            
+            // Update contact info
+            document.getElementById('contactEmail').innerHTML = `<span class="contact-icon">📧</span>Email: ${portfolioData.contact.email}`;
+            document.getElementById('contactPhone').innerHTML = `<span class="contact-icon">📱</span>Phone: ${portfolioData.contact.phone}`;
+            document.getElementById('contactLinkedIn').innerHTML = `<span class="contact-icon">🌐</span>LinkedIn: ${portfolioData.contact.linkedin}`;
+            document.getElementById('contactLocation').innerHTML = `<span class="contact-icon">📍</span>Location: ${portfolioData.contact.location}`;
+            
+            // Render sections
+            renderTimeline();
+            renderSkills();
+            updateElogbookDisplay();
+            updateElogbookStatus();
+        }
+
+        function exportData() {
+            const exportData = {
+                portfolio: portfolioData,
+                files: uploadedFiles
+            };
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `portfolio-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Portfolio data exported successfully!');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (importedData.portfolio) {
+                            portfolioData = { ...portfolioData, ...importedData.portfolio };
+                        }
+                        if (importedData.files) {
+                            uploadedFiles = { ...uploadedFiles, ...importedData.files };
+                        }
+                        
+                        updateDisplayFromData();
+                        loadAdminData();
+                        saveData();
+                        showNotification('Portfolio data imported successfully!');
+                    } catch (error) {
+                        showNotification('Error importing data. Please check file format!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Utility Functions
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} show`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        function animateTimelineItems() {
+            const items = document.querySelectorAll('.timeline-item');
+            const windowHeight = window.innerHeight;
+            
+            items.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                if (rect.top < windowHeight * 0.8) {
+                    item.classList.add('visible');
+                }
+            });
+        }
+
+        // Event Listeners
+        window.addEventListener('scroll', function() {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+            animateTimelineItems();
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Close admin panel when clicking outside
+        document.addEventListener('click', function(event) {
+            const adminPanel = document.getElementById('adminPanel');
+            const adminToggle = document.querySelector('.admin-toggle');
+            
+            if (adminPanel && !adminPanel.contains(event.target) && !adminToggle.contains(event.target)) {
+                adminPanel.classList.remove('active');
+            }
+        });
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            setTimeout(animateTimelineItems, 1000);
+            
+            // Initialize QR code canvas if library is loaded
+            if (typeof QRious !== 'undefined') {
+                const heroQRCanvas = document.getElementById('heroQRCode');
+                // Create placeholder QR code
+                const placeholderQR = new QRious({
+                    element: heroQRCanvas,
+                    value: 'Configure your portfolio URL in admin panel',
+                    size: 80,
+                    background: 'rgba(255,255,255,0.9)',
+                    foreground: '#374151',
+                    level: 'M'
+                });
+            }
+        });
+
+        // Auto-save when window closes
+        window.addEventListener('beforeunload', function() {
+            saveData();
+        });
+    </script>
+</body>
+</html>
